@@ -50,6 +50,7 @@ class ProdukController extends Controller
         'deskripsi' => 'sometimes',
         'foto' => 'sometimes',
         'varian' => 'required|array|min:1',
+        'varian.*.foto' => 'required',
       ]);
       
       $create = DB::transaction(function () use ($request, $validated) {
@@ -64,7 +65,7 @@ class ProdukController extends Controller
 
           if ($data['foto']) {
             $media = $varian
-            ->addMedia($data['foto'])
+            ->addMediaFromBase64($data['foto'])
             ->usingFileName(date('YmdHis') . '.' . 'jpg')->toMediaCollection('foto_varian');
   
             $varian->update(['foto' => $media->getFullUrl() ]);
@@ -96,7 +97,7 @@ class ProdukController extends Controller
         'deskripsi' => 'sometimes',
         'foto' => 'sometimes',
         'harga' => 'sometimes',
-        'diskon' => 'required|array',
+        'diskon' => 'sometimes|array',
         'ukuran' => 'sometimes',
       ]);
       
