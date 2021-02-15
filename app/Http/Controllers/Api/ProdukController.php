@@ -51,7 +51,7 @@ class ProdukController extends Controller
         'foto' => 'sometimes',
         'varian' => 'required|array|min:1',
       ]);
-
+      
       $create = DB::transaction(function () use ($request, $validated) {
         $produk = Produk::create($validated);
 
@@ -60,6 +60,14 @@ class ProdukController extends Controller
             "nama" => $data['nama'],
             "harga" => $data['harga']
           ]);
+
+          if ($data['foto']) {
+            $media = $varian
+            ->addMedia($data['foto'])
+            ->usingFileName(date('YmdHis') . '.' . 'jpg')->toMediaCollection('foto_varian');
+  
+            $varian->update(['foto' => $media->getFullUrl() ]);
+          }
           
           $diskon = $varian->diskon()->create([
             "persentasi" => $data['diskon']['persentasi']
@@ -89,9 +97,18 @@ class ProdukController extends Controller
         'harga' => 'sometimes',
         'diskon' => 'required|array',
       ]);
-
-      $update = DB::transaction(function () use ($validated, $varian) {
+      
+      $update = DB::transaction(function () use ($validated, $varian, $request) {
         $varian->update($validated);
+
+        if ($request->foto) {
+          $media = $varian
+          ->addMedia($request->foto)
+          ->usingFileName(date('YmdHis') . '.' . 'jpg')->toMediaCollection('foto_varian');
+
+          $varian->update(['foto' => $media->getFullUrl() ]);
+        }
+
         $varian->diskon()->update([
           "persentasi" => $validated['diskon']['persentasi']
         ]);
@@ -114,12 +131,20 @@ class ProdukController extends Controller
       
       $update = DB::transaction(function () use ($validated, $produk, $request) {
         $varian = $produk->varian()->create([
-          "nama" => $data['nama'],
-          "harga" => $data['harga']
+          "nama" => $validated['nama'],
+          "harga" => $validated['harga']
         ]);
         $diskon = $varian->diskon()->create([
           "persentasi" => $validated['diskon']['persentasi']
         ]);
+
+        if ($request->foto) {
+          $media = $varian
+          ->addMedia($request->foto)
+          ->usingFileName(date('YmdHis') . '.' . 'jpg')->toMediaCollection('foto_varian');
+
+          $varian->update(['foto' => $media->getFullUrl() ]);
+        }
       });
 
       return response()->json([
