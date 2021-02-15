@@ -58,7 +58,8 @@ class ProdukController extends Controller
         foreach($request->varian as $data){
           $varian = $produk->varian()->create([
             "nama" => $data['nama'],
-            "harga" => $data['harga']
+            "harga" => $data['harga'],
+            "ukuran" => $data['ukuran']
           ]);
 
           if ($data['foto']) {
@@ -96,6 +97,7 @@ class ProdukController extends Controller
         'foto' => 'sometimes',
         'harga' => 'sometimes',
         'diskon' => 'required|array',
+        'ukuran' => 'sometimes',
       ]);
       
       $update = DB::transaction(function () use ($validated, $varian, $request) {
@@ -127,12 +129,14 @@ class ProdukController extends Controller
         'foto' => 'sometimes',
         'harga' => 'required',
         'diskon' => 'required|array',
+        'ukuran' => 'required',
       ]);
       
       $update = DB::transaction(function () use ($validated, $produk, $request) {
         $varian = $produk->varian()->create([
           "nama" => $validated['nama'],
-          "harga" => $validated['harga']
+          "harga" => $validated['harga'],
+          "ukuran" => $validated['ukuran'],
         ]);
         $diskon = $varian->diskon()->create([
           "persentasi" => $validated['diskon']['persentasi']

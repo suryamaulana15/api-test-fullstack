@@ -13,7 +13,7 @@ class Varian extends Model implements HasMedia
     protected $table = 'varian';
 
     protected $fillable = [
-        'id_produk', 'nama', 'deskripsi', 'harga', 'foto'
+        'id_produk', 'nama', 'deskripsi', 'harga', 'foto', 'ukuran'
     ];
 
     public function produk()
